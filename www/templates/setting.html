@@ -1,3 +1,41 @@
 <ion-view title="Setting" id="page8" style="background-color:#BEDCEE;">
-    <ion-content padding="true" class="has-header"></ion-content>
+    <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header">
+
+    <div class="list">
+
+        <label class="item item-input" id="login-input1">
+            <span class="input-label">NICKNAME</span>
+            <input type="text" ng-model="user.email" placeholder="e.g. SUMMER BLAST">
+        </label>
+
+	</div>
+
+    <div class="list">
+
+		<label class="item item-input item-select">
+    		<div class="input-label">
+     			GENDER
+    		</div>
+    		<select>
+      			<option>FEMALE</option>
+      			<option selected>NONE</option>
+      			<option>MALE</option>
+    		</select>
+  		</label>
+
+	</div>
+    
+    <div class="list">
+
+        <label class="item item-input" id="login-input1">
+            <span class="input-label">BIRTHDAY</span>
+            <input type="text" ng-model="user.email" placeholder="e.g. MM/DD/YYYY">
+        </label>
+
+	</div>
+
+	<a id="Setting-button1" class="button button-positive  button-block">Like us on Facebook</a>
+
+	<a id="Setting-button2" class="button button-positive  button-block">About Us</a>
+	</ion-content>
 </ion-view>

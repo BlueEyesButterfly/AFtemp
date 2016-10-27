@@ -1,19 +1,27 @@
 <ion-view title="HomePage" id="page2">
     <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header">
-        <h1 id="homePage-heading1" style="color:#FAFAFA;text-align:center;">Welcome to Ayakashi Ghost Guild Fantisy</h1>
+        <div class="list">
+          <a class="item item-avatar">
+              <img ng-if="firebaseUser" ng-src="{{url}}">
+              <h2 ng-if="firebaseUser">Welcom, {{nickname}}!</h2>
+              <p ng-if="firebaseUser" >Life:{{life}}, Star:{{star}}, Engergy:{{energy}}</p>
+          </a>
+        </div>
+<!--         <h1 id="homePage-heading1" style="color:#FAFAFA;text-align:center;">Welcome to Ayakashi Ghost Guild Fantisy</h1> -->
         <div>
             <img src="img/sWOAFCLSe2FU4saIWVQL_figure2.png" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
         </div>
         <div class="list card" id="homePage-card22">
             <div class="item item-body" id="homePage-list-item-container2">
                 <div id="homePage-markdown3" style="margin-top:0px;color:#000000;">
-                    <p>Some friendly
-                        <strong>markdown</strong>
+                    <p>Hello, Ayakashi Ghost Guild Fantisy is a card game!
+                        <strong>Explore by yourself!</strong>
                     </p>
                 </div>
             </div>
-            <ion-item class="item-icon-left assertive" id="homePage-list-item4">
-                <i class="icon ion-music-note" herf="#/music/HomeBackground.mp3" ></i>Play Song</ion-item>
+            <ion-item class="item-icon-left assertive" id="homePage-list-item4" ng-click="play('/music/HomeBackground.mp3')">
+                <i class="icon ion-music-note" herf="/music/HomeBackground.mp3" ></i>Play Song</ion-item>
         </div>
     </ion-content>
 </ion-view>
+

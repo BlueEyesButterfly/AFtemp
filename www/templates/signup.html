@@ -1,21 +1,39 @@
 <ion-view title="Signup" id="page6">
     <ion-content padding="true" class="has-header">
         <form id="signup-form2" class="list">
-            <ion-list id="signup-list2">
+            <ion-list id="signup-list2"> 
+<!--             <lable class="item item-input" id="signup-input6">
+                <table>
+                <tr>
+                <td>
+
+                <select>
+                    <option value="male" style="background-image:url(/img/male.jpg);">male</option>
+                    <option value="female"  style="background-image:url(/img/female.jpg);">female</option>
+                </select>
+                </td>
+
+                </tr>
+                </table>
+            </lable> -->
+
                 <label class="item item-input" id="signup-input3">
-                    <span class="input-label">Name</span>
-                    <input type="text" placeholder="">
+                    <span class="input-label">NickName</span>
+                    <input type="text" ng-model="user.nickname" placeholder="">
                 </label>
                 <label class="item item-input" id="signup-input4">
-                    <span class="input-label">Username</span>
-                    <input type="text" placeholder="">
+                    <span class="input-label">Email</span>
+                    <input type="text" ng-model="user.email" placeholder="e.g. bob@dole.com">
                 </label>
                 <label class="item item-input" id="signup-input5">
                     <span class="input-label">Password</span>
-                    <input type="text" placeholder="">
+                    <input type="password" ng-model="user.password">
                 </label>
             </ion-list>
-            <button id="signup-button3" class="button button-stable  button-block">Sign up</button>
+            <button id="signup-button3" class="button button-stable  button-block" ng-click="signUp()">Sign up</button>
+            <h3 class="text-center assertive">{{ error.message }}</h3>
+            <h3 ng-if="firebaseUser" class="text-center balanced">Logged as {{ firebaseUser.email }}<h3>
         </form>
+
     </ion-content>
 </ion-view>

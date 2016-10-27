@@ -1,3 +1,32 @@
 <ion-view title="Collection" id="page7">
-    <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header"></ion-content>
+    <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header">
+    <form id="question1-form3" class="list">
+    	
+		<div class="list">
+
+		    <a class="item item-thumbnail-left" href="#" ng-repeat="item in count">
+		      <img src="{{url[item]}}">
+		      <h2>Description</h2>
+		      <p>{{description[item]}}</p>
+		    </a>
+
+		</div>
+	</form>
+    </ion-content>
 </ion-view>
+
+<!-- <form id="question1-form3" class="list">
+            <div class="item item-body" id="question1-list-item-container3">
+            <div id="question1-markdown4" style="margin-top:0px;color:#000000;">
+                <p>Question1:{{question}}</p>
+            </div>
+            </div>
+            <ion-checkbox ng-repeat="item in listPref"
+               ng-model="checkItems[item]" ng-change="print(item)">
+               {{ item }}
+           </ion-checkbox>
+<!--            <ion-checkbox ng-repeat="item in listPref"
+               ng-model="item.checked" ng-change="updateSelection($index, entities)">
+               {{ item }}
+           </ion-checkbox> -->
+</form> -->

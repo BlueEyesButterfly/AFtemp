@@ -145,6 +145,37 @@ function ($scope, $stateParams,$ionicModal, $firebaseAuth, $state, $timeout,User
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams) {
 
+	var user = firebase.auth().currentUser;
+     $scope.firebaseUser=user;
+     $scope.url=[];
+     $scope.description=[];
+
+     var userId = firebase.auth().currentUser.uid;
+
+     var userCollectionsArray= firebase.database().ref('/users/'+ userId+'/collections');
+     var arrarylength=Object.keys(userCollectionsArray).length;
+     for(i=1;i<arrarylength;i++){
+         var userCards= firebase.database().ref('/users/' + userId+'/collections/'+i.toString());
+         userCards.on('value', function(snapshot) {
+			  $scope.url.push(snapshot.val().url);
+			  $scope.description.push(snapshot.val().description);
+	    });
+     }
+
+     $scope.count=[];
+     $scope.al=Object.keys($scope.description).length
+     for(i=0;i<2;i++){
+     	$scope.count.push(i);
+     }
+
+
+     // $scope.userProfile=function(){
+	 	
+
+
+
+
+
 
 }])
    

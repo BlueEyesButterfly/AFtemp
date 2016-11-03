@@ -179,10 +179,23 @@ function ($scope, $stateParams) {
 
 }])
    
-.controller('settingCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('settingCtrl', ['$scope', '$stateParams','$state','Auth', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+function ($scope, $stateParams,$state, Auth) {
+    var user = firebase.auth().currentUser;
+    $scope.firebaseUser=user;
+    if(user){
+    	$scope.hidden=false;
+    }
+    else{
+    	$scope.hidden=true;
+    }
+	$scope.logout=function(){
+	  Auth.$signOut();
+      console.log("Signing out");
+      $state.go('login');
+	};
 
 
 }])

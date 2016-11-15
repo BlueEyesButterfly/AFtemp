@@ -1,6 +1,17 @@
 <ion-view title="You win a card!" id="page11">
-    <ion-content padding="true" style="background: url(img/w1c1.jpg) no-repeat center;background-size:cover;" class="has-header">
-        <a ui-sref="tabsController.explore" id="youWinACard-button14" class="button button-positive  button-block">OK</a>
+    <ion-content padding="true" style="background: url({{urlOfCard}}) no-repeat center; background-size:cover; " class="has-header">
+       <div style="position: absolute; top: 200px;width: 250px; height: 40px; left: 55px">    
+        
+        <div class="list card" id="win-card22">
+            <div class="item item-body" id="Lose-list-item-container2">
+                <div id="win-markdown1" style="margin-top:0px;color:#000000;" >
+                    <p>Congratulation! You win a card. </p>
+                </div>
+                <a id="youWinACard-button14" class="button button-positive  button-block" ng-click="winACard()">OK</a>            
+            </div>
+        </div>
+
+       </div>
+
     </ion-content>
-    <button id="youWinACard-button1" class="button button-positive  button-block" href="#/explorePage">Go Back to Explore</button>
 </ion-view>

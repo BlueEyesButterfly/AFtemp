@@ -37,13 +37,57 @@ function ($scope, $stateParams,Auth,$state,$cordovaMedia,$ionicLoading) {
 
 }])
    
-.controller('exploreCtrl', ['$scope', '$stateParams', '$state',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('exploreCtrl', ['$scope', '$stateParams', '$state','$ionicPopup','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,$state) {
+function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade) {
 	$scope.start=function(){
-        $state.go('tabsController.question1');
-	}
+    grade.current=5;
+	TypeOfQuestion.currentType=TypeOfQuestion.type[0];
+	var userId = firebase.auth().currentUser.uid;
+    var userlife= firebase.database().ref('/users/'+ userId+'/life');
+    userlife.once('value', function(snapshot,userlife){
+        var templife=snapshot.val();
+        if(templife>0){
+        	$state.go('tabsController.question1');
+        }
+        else{
+        	var alertPopup = $ionicPopup.alert({
+			    title: 'Out of life!',
+			    template: 'You are out of life, please wait.'
+		   });
+
+		   alertPopup.then(function(res) {
+		     console.log('Thank you for not eating my delicious ice cream cone');
+		   });
+ 		};
+    });
+		
+	};
+	$scope.w2eq=function(){
+    grade.current=5;
+	TypeOfQuestion.currentType=TypeOfQuestion.type[1];
+	var userId = firebase.auth().currentUser.uid;
+    var userlife= firebase.database().ref('/users/'+ userId+'/life');
+    userlife.once('value', function(snapshot,userlife){
+        var templife=snapshot.val();
+        if(templife>0){
+        	$state.go('tabsController.question1');
+        }
+        else{
+        	var alertPopup = $ionicPopup.alert({
+			    title: 'Out of life!',
+			    template: 'You are out of life, please wait.'
+		   });
+
+		   alertPopup.then(function(res) {
+		     console.log('Thank you for not eating my delicious ice cream cone');
+		   });
+ 		};
+    });
+		
+	};
+
 
 
 }])
@@ -126,8 +170,9 @@ function ($scope, $stateParams,$ionicModal, $firebaseAuth, $state, $timeout,User
 		    email: email,
 		    profile_picture : imageUrl,
 		    life: 5,
-		    star: 3,
-		    energy:30
+		    star: 1,
+		    energy:30,
+		    collections:{1:{"url":"/img/w1c1.jpg","description":"Fire"}}
            });
 		$timeout(function(){
         $state.go('login');
@@ -140,42 +185,50 @@ function ($scope, $stateParams,$ionicModal, $firebaseAuth, $state, $timeout,User
 
 }])
    
-.controller('collectionCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('collectionCtrl', ['$scope', '$stateParams','$firebaseArray', '$firebaseObject','Auth',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth) {
 
 	var user = firebase.auth().currentUser;
      $scope.firebaseUser=user;
      $scope.url=[];
      $scope.description=[];
 
-     var userId = firebase.auth().currentUser.uid;
+    var userId=firebase.auth().currentUser.uid;	
+    var ref = firebase.database().ref('users/' + userId+'/').child("collections");
+    $scope.collections = $firebaseArray(ref);
+	// $scope.winACard=function(){
+	//   // $add on a synchronized array is like Array.push() except it saves to the database!
+	//     var num_temp=Math.floor((Math.random()*9)+1.0)
+ //      	$scope.collections.$add({
+ //        "url": $scope.urlOfCard,
+ //        "description": $scope.description[num_temp]
+ //        // timestamp: firebase.database.ServerValue.TIMESTAMP
+ //      });
 
-     var userCollectionsArray= firebase.database().ref('/users/'+ userId+'/collections');
-     var arrarylength=Object.keys(userCollectionsArray).length;
-     for(i=1;i<arrarylength;i++){
-         var userCards= firebase.database().ref('/users/' + userId+'/collections/'+i.toString());
-         userCards.on('value', function(snapshot) {
-			  $scope.url.push(snapshot.val().url);
-			  $scope.description.push(snapshot.val().description);
-	    });
-     }
+     // var userId = firebase.auth().currentUser.uid;
+     // var userCollectionsArray= firebase.database().ref('/users/'+ userId+"/collections");
 
-     $scope.count=[];
-     $scope.al=Object.keys($scope.description).length
-     for(i=0;i<2;i++){
-     	$scope.count.push(i);
-     }
+   //   userCollectionsArray.on('value',function(snapshot) {
+   //   	 var numC=snapshot.numChildren();
+   //   	 console.log(numC+"*****hi");
 
+   //   	 for(i=1;i<=numC;i++){
+   //       var userCards= firebase.database().ref('/users/' + userId+'/collections/'+i.toString());
+   //       userCards.on('value', function(snapshot) {
+			//   $scope.url.push(snapshot.val().url);
+			//   console.log(snapshot.val().url);
+			//   $scope.description.push(snapshot.val().description);
+			// });
+   //      }
+   //      $scope.count=[];
 
-     // $scope.userProfile=function(){
-	 	
-
-
-
-
-
+	  //   for(i=0;i<numC;i++){
+	  //    	$scope.count.push(i);
+	  //   }
+	  //    console.log($scope.url);
+   //   });
 
 }])
    
@@ -200,36 +253,45 @@ function ($scope, $stateParams,$state, Auth) {
 
 }])
    
-.controller('question1Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.service('grade',function(){
+	this.current=5;
+})
+.service('TypeOfQuestion',function(){
+	this.type=['easyQuestions','w2eq','w3eq'];
+	this.currentType=this.type[0];
+	this.typeCard={'easyQuestions':'academyCards','w2eq':'summerCards','w3eq':'shrineCards'}
+})
+
+// .factory("Cardcollections", ["$firebaseArray",
+//   function($firebaseArray) {
+//     // create a reference to the database where we will store our data
+//     var ref = firebase.database().ref();
+
+//     return $firebaseArray(ref);
+//   }
+// ])
+.controller('question1Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup','grade','TypeOfQuestion',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state,Auth,$ionicPopup) {
-	// $state.go($state.current, {}, {reload: true});
+function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion) {
 
-    var easyQuestions= firebase.database().ref('/easyQuestions/');
+    var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
+    // var easyQuestions= firebase.database().ref('/w2eq/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
-    // $scope.len=Object.keys(easyQuestions).length;
-    
-
-
-
-
-    // $scope.getQuestions=function($scope){
-	var question= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
-	//$scope.question="hello";
-     // $scope.userProfile=function(){
+    console.log(grade.current);
+    console.log(TypeOfQuestion.currentType);
+    // console.log($scope.initialId);
+	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
 	  $scope.listPref=snapshot.val().options;
 	  $scope.question=snapshot.val().question;
 	  $scope.answer=snapshot.val().answer;
+	  console.log($scope.answer);
 	  for(i in $scope.listPref){
 	  	console.log($scope.listPref[i]);
 	  }
 
 	});
-	//$scope.initialId=$scope.initialId-1;
-
-
 	$scope.checkItems = { };
     $scope.print = function(item) {
         for(i in $scope.checkItems){
@@ -258,8 +320,17 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
-	         	$state.go('tabsController.explore');
+	         	$state.go('tabsController.explore');		
 	         }
 
 	       },
@@ -274,12 +345,22 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	     });
 	}
 	else{
+		grade.current=grade.current-1;
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -297,56 +378,21 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 
 	}
 
-		//$state.go('tabsController.question2');
-      //$scope.initialId=$scope.initialId-1;
-
-   //     if($scope.initialId>0){
-   //     	 var easyQuestions= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
-
-			// easyQuestions.on('value', function(snapshot) {
-			//   $scope.listPref=snapshot.val().options;
-			//   $scope.question=snapshot.val().question;
-			//   $scope.answer=snapshot.val().answer;
-			//   for(i in $scope.listPref){
-			//   	console.log($scope.listPref[i]);
-			//   }
-
-			// });
-			// $scope.checkItems = { };
-
-			// $scope.print = function() {
-			//     console.log($scope.checkItems);
-			// };
-
-			// $scope.save = function() {
-			//     var array = [];
-			//     for(i in $scope.checkItems) {
-			//         console.log($scope.checkItems[i]);
-			//         if($scope.checkItems[i] == true) {
-			//             array.push(i);
-			//         }
-			//     }
-			//     console.log(array);
-			// };
-            
-   //     }
-   //     else{
-
-   //       $state.go('tabsController.question2');
-   //     }
 	}
 	
 }])
    
-.controller('question2Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('question2Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup','grade','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state,Auth,$ionicPopup) {
+function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion,grade) {
 
-    var easyQuestions= firebase.database().ref('/easyQuestions/');
+    var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
+    $scope.currentGrade=grade;
+    console.log($scope.currentGrade.current);
     // Math.floor((Math.random() * 10) + 1);
-	var question= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
+	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
 	  $scope.listPref=snapshot.val().options;
 	  $scope.question=snapshot.val().question;
@@ -384,6 +430,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -400,12 +455,22 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	     });
 	}
 	else{
+		grade.current=grade.current-1;
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -426,15 +491,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	
 }])
 
-.controller('question3Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('question3Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state,Auth,$ionicPopup) {
-
-    var easyQuestions= firebase.database().ref('/easyQuestions/');
+function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
+    console.log(grade.current);
+    var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
-	var question= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
+	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
 	  $scope.listPref=snapshot.val().options;
 	  $scope.question=snapshot.val().question;
@@ -472,6 +537,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -488,12 +562,22 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	     });
 	}
 	else{
+		 grade.current=grade.current-1;
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -514,15 +598,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	
 }])
 
-.controller('question4Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('question4Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state,Auth,$ionicPopup) {
-
-    var easyQuestions= firebase.database().ref('/easyQuestions/');
+function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
+    console.log(grade.current);
+    var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
-	var question= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
+	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
 	  $scope.listPref=snapshot.val().options;
 	  $scope.question=snapshot.val().question;
@@ -560,6 +644,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -576,12 +669,22 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	     });
 	}
 	else{
+		 grade.current=grade.current-1;
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
@@ -602,15 +705,15 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	
 }])
 
-.controller('question5Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('question5Ctrl', ['$scope', '$stateParams', '$state','Auth','$ionicPopup','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state,Auth,$ionicPopup) {
-
-    var easyQuestions= firebase.database().ref('/easyQuestions/');
+function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
+    console.log(grade.current);
+    var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
-	var question= firebase.database().ref('/easyQuestions/'+$scope.initialId.toString());
+	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
 	  $scope.listPref=snapshot.val().options;
 	  $scope.question=snapshot.val().question;
@@ -648,15 +751,32 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
 
 	       },
-	       { text: '<b>Next Question</b>',
+	       { text: '<b>See your grade</b>',
 	         onTap: function(){
 	         	$state.go($state.current, {}, {reload: true});
-	         	$state.go('youWinACard');
+	            if(grade.current<5){
+	         		$state.go('sorryYouLoose');
+	            }
+	            else if(grade.current==5){
+	            	$state.go('youWinACard');
+	            }
+	            else{
+	            	console.log("Error!!!!!");
+	            }
 	         }
 
 	       }
@@ -664,21 +784,32 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	     });
 	}
 	else{
+		 grade.current=grade.current-1;
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
 	       buttons:[
 	       { text: 'Quit',
 	         onTap: function(){
+	            var userId = firebase.auth().currentUser.uid;
+                var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife-1;
+					firebase.database().ref().update(updates);                   
+                });
 	         	$state.go($state.current, {}, {reload: true});
 	         	$state.go('tabsController.explore');
 	         }
 
 	       },
-	       { text: '<b>Next Question</b>',
+	       { text: '<b>See your grade</b>',
 	         onTap: function(){
-	         	$state.go($state.current, {}, {reload: true});
+	         	// $state.go($state.current, {}, {reload: true});
 	         	$state.go('sorryYouLoose');
+
 	         }
 
 	       }
@@ -690,19 +821,65 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup) {
 	
 }])
    
-.controller('youWinACardCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// .service('TypeOfQuestion',function(){
+// 	this.type=['easyQuestions','w2eq','w3eq'];
+// 	this.currentType=this.type[0];
+// 	this.typeCard={'easyQuestions':'academyCards';'w2eq':'summerCards','w3eq':'shrineCards'}
+// })
+
+.controller('youWinACardCtrl', ['$scope', '$stateParams', '$state', 'TypeOfQuestion', 'Auth', '$firebaseArray', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray) {
+    var groupOfCard=TypeOfQuestion.typeCard[TypeOfQuestion.currentType]
+    console.log(groupOfCard);
+    var cards= firebase.database().ref('/'+groupOfCard+'/');
+    // var easyQuestions= firebase.database().ref('/w2eq/');
+    $scope.initialId=Math.floor((Math.random()*(Object.keys(cards).length-1))+1.0);
+    console.log($scope.initialId);
+    console.log(TypeOfQuestion.currentType);
+    // console.log($scope.initialId);
+	var question= firebase.database().ref('/'+groupOfCard+'/'+$scope.initialId.toString());
+	question.on('value', function(snapshot) {
+	  $scope.urlOfCard=snapshot.val().url;
+	  console.log($scope.urlOfCard);
+	});
+    var userId=firebase.auth().currentUser.uid;
+    $scope.description=["Fire","Water","Wind","ligtning","ligting","Life","Power","Earth","Gold","Stone"]
+	// $scope.urlOfCard='img/w10c1.jpg';
+	
 
+	
+    var ref = firebase.database().ref('users/' + userId+'/').child("collections");
+    $scope.collections = $firebaseArray(ref);
+	$scope.winACard=function(){
+	  // $add on a synchronized array is like Array.push() except it saves to the database!
+	    var num_temp=Math.floor((Math.random()*9)+1.0)
+      	$scope.collections.$add({
+        "url": $scope.urlOfCard,
+        "description": $scope.description[num_temp]
+        // timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
+	  //   firebase.database().ref('users/' + userId+'/collections').set({
+	  //   username: name,
+	  //   email: email,
+	  //   profile_picture : imageUrl
+	  // });
+	   $state.go('tabsController.explore');
+	}
 
 }])
    
-.controller('sorryYouLooseCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('sorryYouLooseCtrl', ['$scope', '$stateParams','grade', '$state',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
-
+function ($scope, $stateParams,grade,$state) {
+	console.log(grade.current);
+	$scope.finalGrade=grade.current;
+	console.log($scope.finalGrade);
+    $scope.backToExplore=function(){
+      $state.go('tabsController.explore');
+   }
 
 }])
 

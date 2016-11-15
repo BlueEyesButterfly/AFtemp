@@ -1,12 +1,13 @@
 <ion-view title="Sorry, you loose." id="page12">
     <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header">
-        <a ui-sref="tabsController.explore" id="youWinACard-button14" class="button button-positive  button-block">Go Back to Explore</a>
+        <a id="youLoose-button14" class="button button-positive  button-block" ng-click="backToExplore()">Go Back to Explore</a>
         <div>
             <img src="img/lose.png" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
         </div>
         <div class="list card" id="Lose-card22">
             <div class="item item-body" id="Lose-list-item-container2">
-                <div id="Lose-markdown3" style="margin-top:0px;color:#000000;">
+                <div id="Lose-markdown3" style="margin-top:0px;color:#000000;" >
+                    <p>Your grade is {{finalGrade}}. </p>
                     <p>Sorry, but you failed during your process of exploring the world of wonderlands. Get some rest and try again!
                     </p>
                 </div>

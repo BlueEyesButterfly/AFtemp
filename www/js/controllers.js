@@ -91,12 +91,88 @@ function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade) {
 
 
 }])
+
+.factory('safeApply', [function($rootScope) {
+    return function($scope, fn) {
+        var phase = $scope.$root.$$phase;
+        if(phase == '$apply' || phase == '$digest') {
+            if (fn) {
+                $scope.$eval(fn);
+            }
+        } else {
+            if (fn) {
+                $scope.$apply(fn);
+            } else {
+                $scope.$apply();
+            }
+        }
+    }
+}])
    
-.controller('gachaPageCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('gachaPageCtrl', ['$scope', '$stateParams', '$firebaseArray','safeApply','$ionicPopup','$timeout',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout) {
+     
+     $scope.cardImage="img/circle_s.png";
+     $scope.summon=function(x){
+        // var ref_cardGroup=firebase.database().ref('nsCards/');
+        var ref_cardGroup=firebase.database().ref(x);
+        var cards=$firebaseArray(ref_cardGroup);
+        //random choose a card from nsCards
+        var num_card=Math.floor((Math.random()*19)+1.0);
+        // $scope.cardImage=cards[num_card].url;
+        //var ref2=firebase.database().ref('nsCards/'+JSON.stringify(num_card)+'/');
+        var ref2=firebase.database().ref(x+JSON.stringify(num_card)+'/');
+        ref2.on("value", function(snapshot) {
+		  // This isn't going to show up in the DOM immediately, because
+		  // Angular does not know we have changed this in memory.
+		  // $scope.data = snapshot.val();
+		  // To fix this, we can use $scope.$apply() to notify Angular that a change occurred.
+		  safeApply($scope, function() {
+		  	//obtain the url of this chosen card
+		    $scope.cardImage = snapshot.val().url;
+		    console.log(snapshot.val().url);
+		    var userId=firebase.auth().currentUser.uid;	
+		    //add this card to user's collections
+			$scope.description=["Fire","Water","Wind","ligtning","ligting","Life","Power","Earth","Gold","Stone"]
+		    var ref = firebase.database().ref('users/' + userId+'/').child("collections");
+		    $scope.collections = $firebaseArray(ref);
+		    var num_temp=Math.floor((Math.random()*9)+1.0)
+	      	$scope.collections.$add({
+	        "url": $scope.cardImage,
+	        "description": $scope.description[num_temp]
+	        // timestamp: firebase.database.ServerValue.TIMESTAMP
+	      	});
+	        var alertPopup = $ionicPopup.alert({
+			    title: 'Congratulation!',
+			    template: 'You get a new card! Your Energy minus 3 points.'
+		   });
+	         alertPopup.then(function() {
+	         	//reassigned the cardImage to default
+                 $timeout(function(){
+			        $scope.cardImage="img/circle_s.png";
+			    }, 2000);
+		        
+		   });
+	         // substract the energy point of user
+	         var userEngy= firebase.database().ref('/users/'+ userId+'/energy');
+                userEngy.once('value', function(snapshot){
+                    var tempEngy=snapshot.val();
+                    console.log(tempEngy);
+	                var updates={};  
+	                updates['/users/'+ userId+'/energy'] = tempEngy-3;
+					firebase.database().ref().update(updates);                   
+                });
 
+
+
+		  });
+		});
+
+
+
+     };
 
 }])
       
@@ -198,38 +274,6 @@ function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth) {
     var userId=firebase.auth().currentUser.uid;	
     var ref = firebase.database().ref('users/' + userId+'/').child("collections");
     $scope.collections = $firebaseArray(ref);
-	// $scope.winACard=function(){
-	//   // $add on a synchronized array is like Array.push() except it saves to the database!
-	//     var num_temp=Math.floor((Math.random()*9)+1.0)
- //      	$scope.collections.$add({
- //        "url": $scope.urlOfCard,
- //        "description": $scope.description[num_temp]
- //        // timestamp: firebase.database.ServerValue.TIMESTAMP
- //      });
-
-     // var userId = firebase.auth().currentUser.uid;
-     // var userCollectionsArray= firebase.database().ref('/users/'+ userId+"/collections");
-
-   //   userCollectionsArray.on('value',function(snapshot) {
-   //   	 var numC=snapshot.numChildren();
-   //   	 console.log(numC+"*****hi");
-
-   //   	 for(i=1;i<=numC;i++){
-   //       var userCards= firebase.database().ref('/users/' + userId+'/collections/'+i.toString());
-   //       userCards.on('value', function(snapshot) {
-			//   $scope.url.push(snapshot.val().url);
-			//   console.log(snapshot.val().url);
-			//   $scope.description.push(snapshot.val().description);
-			// });
-   //      }
-   //      $scope.count=[];
-
-	  //   for(i=0;i<numC;i++){
-	  //    	$scope.count.push(i);
-	  //   }
-	  //    console.log($scope.url);
-   //   });
-
 }])
    
 .controller('settingCtrl', ['$scope', '$stateParams','$state','Auth', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller

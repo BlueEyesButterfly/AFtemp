@@ -144,24 +144,45 @@ function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout) {
 	        "description": $scope.description[num_temp]
 	        // timestamp: firebase.database.ServerValue.TIMESTAMP
 	      	});
-	        var alertPopup = $ionicPopup.alert({
-			    title: 'Congratulation!',
-			    template: 'You get a new card! Your Energy minus 3 points.'
-		   });
-	         alertPopup.then(function() {
-	         	//reassigned the cardImage to default
-                 $timeout(function(){
-			        $scope.cardImage="img/circle_s.png";
-			    }, 2000);
-		        
-		   });
+	      	if(x=='nsCards/'){
+		        var alertPopup = $ionicPopup.alert({
+				    title: 'Congratulation!',
+				    template: 'You get a new card! Your Energy minus 3 points.'
+			   });
+		         alertPopup.then(function() {
+		         	//reassigned the cardImage to default
+	                 $timeout(function(){
+				        $scope.cardImage="img/circle_s.png";
+				    }, 2000);
+			        
+			   });
+	       }
+	       else{
+	       	    var alertPopup = $ionicPopup.alert({
+				    title: 'Congratulation!',
+				    template: 'You get a new card! Your Energy minus 5 points.'
+			   });
+		         alertPopup.then(function() {
+		         	//reassigned the cardImage to default
+	                 $timeout(function(){
+				        $scope.cardImage="img/circle_s.png";
+				    }, 2000);
+			        
+			   });
+	       }
 	         // substract the energy point of user
 	         var userEngy= firebase.database().ref('/users/'+ userId+'/energy');
                 userEngy.once('value', function(snapshot){
                     var tempEngy=snapshot.val();
                     console.log(tempEngy);
-	                var updates={};  
-	                updates['/users/'+ userId+'/energy'] = tempEngy-3;
+	                var updates={};
+	                if(x=='nsCards/'){
+	                	updates['/users/'+ userId+'/energy'] = tempEngy-3;
+	                } 
+	                else{
+	                	updates['/users/'+ userId+'/energy'] = tempEngy-5;
+	                }
+	                
 					firebase.database().ref().update(updates);                   
                 });
 

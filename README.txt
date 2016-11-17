@@ -30,8 +30,12 @@ Steps to test the views:
    	         homePage.html, Explore.html, Collection.html, Gacha.html, Setting.html
              They are correspondingly related to five main features of the project.
 4. Testing Side-menu in the index.html: There are four list-items inside the side-menu, each list-item has a link to different pages which are intro.html, signup.html, login.html, homePage.html.
-5. Testing views linked to Explore.html: Completed data available for Question1.html.
-6. Testing different settings: The setting page allows users to set their Gender, Birthday, and Nickname.
+5. Testing views linked to Explore.html: Completed data available for world 1, 2, and 3.
+6. Testing Summon function: Completed datasets and function for Normal summon and Rare summon function is now available for the users.
+7. Testing collection: The collection pages records all cards that have been obtained.
+7. Testing different settings: The setting page allows users to set their Gender, Birthday, and Nickname.
+8. Accessing extra information: The setting page allows users to access to our facebook and about us page.
+9: Testing logout system: The setting page offers user opportunity to logout with their information being stored in order to login for the next time.
 
 ## Built With
 
@@ -43,22 +47,25 @@ Steps to test the views:
 
 Version 1.1
 
-Added features for data security by establishing structured database using firebase in order to serve individual users.
-Added default data including user's information on life, star, and energy points, and also personal icons.
-Completed dataset for world number 1 and added results for exploring different worlds.
-Developed a view for collecting the card that user has collected.
-Created associated buttons for Gacha and Setting functions.
-Adjusted the content and the location of the side bar.
+Added normal summon function which could randomly generate a card associated with this normal card set and cost user 3 points of engergy.
+Added rare summon function which could randomly generate a card associated with this rare card set and cost user 5 points of engergy.
+Added interactions between two summon functions and collection data storage 
+Added interactions between two summon functions and user energy points
+Added tables in firebase for all worlds in explore page
+Completed all the function of different worlds in explore page
+Added tables in firebase for all cards belonged to different worlds
+Completed the function of grading which could render WinACard page if all answers were right, and render youLoose page if one answer was not right.
+Completed the function of WinACard page which could randomly generate a card associated with that world, and automatically created a new record in user's collections.   
+Added Like us on facebook link out page
+Added About us page
 
 ## Incomplete Issues:
 
- 1. Incomplete relationships between the reward from Explore and the card information from Collection and the cards optioned from Gacha
- 2. Incomplete datasets for exploring locations other than world number 1.
- 3. Lack of updating functions associated with Nickname, Birthday, and Gender information under the setting page for different users.
- 4. Lack of function music plugin.
- 5. Incomplete descriptions corresponding to each card.
- 6. Incomplete link for "About Us", "Like us on Facebook".
- 7. Incomplete functional buttons for gacha methods.
+ 
+ 1. Lack of updating functions associated with Nickname, Birthday, and Gender information under the setting page for different users.
+ 2. Lack of functional music plugin.
+ 3. Incomplete functional buttons for two remaining gacha functions which are shop and exchange.
+ 4. Incomplete some constraint for dynamic user data
 
 
 ## Authors

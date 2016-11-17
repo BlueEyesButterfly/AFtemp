@@ -37,13 +37,16 @@ function ($scope, $stateParams,Auth,$state,$cordovaMedia,$ionicLoading) {
 
 }])
    
-.controller('exploreCtrl', ['$scope', '$stateParams', '$state','$ionicPopup','TypeOfQuestion','grade',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('exploreCtrl', ['$scope', '$stateParams', '$state','$ionicPopup','TypeOfQuestion','grade','sharedQuestionType',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade) {
-	$scope.start=function(){
-    grade.current=5;
-	TypeOfQuestion.currentType=TypeOfQuestion.type[0];
+function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade,sharedQuestionType) {
+	$scope.start=function(x){
+    grade.setCurrent(5);
+	TypeOfQuestion.currentType=TypeOfQuestion.type[x];
+	sharedQuestionType.setProperty(TypeOfQuestion.type[x]);
+	console.log(x);
+	console.log(TypeOfQuestion.currentType);
 	var userId = firebase.auth().currentUser.uid;
     var userlife= firebase.database().ref('/users/'+ userId+'/life');
     userlife.once('value', function(snapshot,userlife){
@@ -64,29 +67,29 @@ function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade) {
     });
 		
 	};
-	$scope.w2eq=function(){
-    grade.current=5;
-	TypeOfQuestion.currentType=TypeOfQuestion.type[1];
-	var userId = firebase.auth().currentUser.uid;
-    var userlife= firebase.database().ref('/users/'+ userId+'/life');
-    userlife.once('value', function(snapshot,userlife){
-        var templife=snapshot.val();
-        if(templife>0){
-        	$state.go('tabsController.question1');
-        }
-        else{
-        	var alertPopup = $ionicPopup.alert({
-			    title: 'Out of life!',
-			    template: 'You are out of life, please wait.'
-		   });
+	// $scope.w2eq=function(){
+ //    grade.current=5;
+	// TypeOfQuestion.currentType=TypeOfQuestion.type[1];
+	// var userId = firebase.auth().currentUser.uid;
+ //    var userlife= firebase.database().ref('/users/'+ userId+'/life');
+ //    userlife.once('value', function(snapshot,userlife){
+ //        var templife=snapshot.val();
+ //        if(templife>0){
+ //        	$state.go('tabsController.question1');
+ //        }
+ //        else{
+ //        	var alertPopup = $ionicPopup.alert({
+	// 		    title: 'Out of life!',
+	// 		    template: 'You are out of life, please wait.'
+	// 	   });
 
-		   alertPopup.then(function(res) {
-		     console.log('Thank you for not eating my delicious ice cream cone');
-		   });
- 		};
-    });
+	// 	   alertPopup.then(function(res) {
+	// 	     console.log('Thank you for not eating my delicious ice cream cone');
+	// 	   });
+ // 		};
+ //    });
 		
-	};
+	// };
 
 
 
@@ -319,12 +322,39 @@ function ($scope, $stateParams,$state, Auth) {
 }])
    
 .service('grade',function(){
-	this.current=5;
+	var current=5;
+    return {
+    getCurrent: function () {
+        return current;
+    },
+    setCurrent: function(value) {
+        current = value;
+    }
+};
 })
+// .service('TypeOfQuestion',function(){
+// 	this.type=['easyQuestions','w2eq','w3eq'];
+// 	this.currentType=this.type[0];
+// 	this.typeCard={'easyQuestions':'academyCards','w2eq':'summerCards','w3eq':'shrineCards'}
+// })
 .service('TypeOfQuestion',function(){
-	this.type=['easyQuestions','w2eq','w3eq'];
-	this.currentType=this.type[0];
-	this.typeCard={'easyQuestions':'academyCards','w2eq':'summerCards','w3eq':'shrineCards'}
+    this.currentType='easyQuestions';    
+	this.type=['easyQuestions','w2eq','w3eq','w4eq','w5eq','w6eq','w7eq','w8eq','w9eq','w10eq','w11eq','w12eq','w13eq','w14eq','w15eq','w16eq'];
+	this.typeCard={'easyQuestions':'academyCards','w2eq':'summerCards','w3eq':'shrineCards','w4eq':'lolitaCards','w5eq':'hallowCards','w6eq':'ChrismCards','w7eq':'magicCards','w8eq':'summonCards','w9eq':'swordCards','w10eq':'nyearCards','w11eq':'wworldCards','w12eq':'devilsCards','w13eq':'weaponCards','w14eq':'princeCards','w15eq':'monsterCards','w16eq':'spaceCards'}
+
+})
+
+.service('sharedQuestionType',function(){
+	var property = 'easyQuestions';
+
+        return {
+            getProperty: function () {
+                return property;
+            },
+            setProperty: function(value) {
+                property = value;
+            }
+        };
 })
 
 // .factory("Cardcollections", ["$firebaseArray",
@@ -343,7 +373,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion) {
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     // var easyQuestions= firebase.database().ref('/w2eq/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
-    console.log(grade.current);
+    console.log(grade.getCurrent());
     console.log(TypeOfQuestion.currentType);
     // console.log($scope.initialId);
 	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
@@ -410,7 +440,8 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion) {
 	     });
 	}
 	else{
-		grade.current=grade.current-1;
+		
+		grade.setCurrent(grade.getCurrent()-1);
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
@@ -454,8 +485,8 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion,gra
 
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
-    $scope.currentGrade=grade;
-    console.log($scope.currentGrade.current);
+    // $scope.currentGrade=grade;
+    // console.log($scope.currentGrade.current);
     // Math.floor((Math.random() * 10) + 1);
 	var question= firebase.database().ref('/'+TypeOfQuestion.currentType+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
@@ -520,7 +551,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion,gra
 	     });
 	}
 	else{
-		grade.current=grade.current-1;
+		grade.setCurrent(grade.getCurrent()-1);
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
@@ -560,7 +591,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion,gra
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
-    console.log(grade.current);
+    console.log(grade.getCurrent());
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
@@ -627,7 +658,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 	     });
 	}
 	else{
-		 grade.current=grade.current-1;
+		 grade.setCurrent(grade.getCurrent()-1);
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
@@ -667,7 +698,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
-    console.log(grade.current);
+    console.log(grade.getCurrent());
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
@@ -734,7 +765,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 	     });
 	}
 	else{
-		 grade.current=grade.current-1;
+		 grade.setCurrent(grade.getCurrent()-1);
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
@@ -774,7 +805,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
-    console.log(grade.current);
+    console.log(grade.getCurrent());
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(easyQuestions).length-1))+1.0);
     // Math.floor((Math.random() * 10) + 1);
@@ -833,10 +864,10 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 	       { text: '<b>See your grade</b>',
 	         onTap: function(){
 	         	$state.go($state.current, {}, {reload: true});
-	            if(grade.current<5){
+	            if(grade.getCurrent()<5){
 	         		$state.go('sorryYouLoose');
 	            }
-	            else if(grade.current==5){
+	            else if(grade.getCurrent()==5){
 	            	$state.go('youWinACard');
 	            }
 	            else{
@@ -849,7 +880,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 	     });
 	}
 	else{
-		 grade.current=grade.current-1;
+		 grade.setCurrent(grade.getCurrent()-1);
 	     var confirmPopup = $ionicPopup.show({
 	       title: 'Oops!',
 	       template: 'Your answer is wrong!',
@@ -892,11 +923,13 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 // 	this.typeCard={'easyQuestions':'academyCards';'w2eq':'summerCards','w3eq':'shrineCards'}
 // })
 
-.controller('youWinACardCtrl', ['$scope', '$stateParams', '$state', 'TypeOfQuestion', 'Auth', '$firebaseArray', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('youWinACardCtrl', ['$scope', '$stateParams', '$state', 'TypeOfQuestion', 'Auth', '$firebaseArray','sharedQuestionType', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray) {
-    var groupOfCard=TypeOfQuestion.typeCard[TypeOfQuestion.currentType]
+function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sharedQuestionType) {
+    var questionType=sharedQuestionType.getProperty();
+    var groupOfCard=TypeOfQuestion.typeCard[questionType];
+    console.log(questionType);
     console.log(groupOfCard);
     var cards= firebase.database().ref('/'+groupOfCard+'/');
     // var easyQuestions= firebase.database().ref('/w2eq/');
@@ -939,8 +972,8 @@ function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray) {
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams,grade,$state) {
-	console.log(grade.current);
-	$scope.finalGrade=grade.current;
+	console.log(grade.getCurrent());
+	$scope.finalGrade=grade.getCurrent();
 	console.log($scope.finalGrade);
     $scope.backToExplore=function(){
       $state.go('tabsController.explore');

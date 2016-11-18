@@ -17,6 +17,7 @@ An instruction can be found on the website: http://ionicframework.com/getting-st
 ## Running the tests
 
 Sample tests should access views of the app, but automatic test is unavailable by now.
+
 Steps to test the views:
 
 1. Testing Slideboxes:
@@ -30,12 +31,13 @@ Steps to test the views:
    	         homePage.html, Explore.html, Collection.html, Gacha.html, Setting.html
              They are correspondingly related to five main features of the project.
 4. Testing Side-menu in the index.html: There are four list-items inside the side-menu, each list-item has a link to different pages which are intro.html, signup.html, login.html, homePage.html.
-5. Testing views linked to Explore.html: Completed data available for world 1, 2, and 3.
+5. Testing views linked to Explore.html: Completed data available for all 16 worlds.
 6. Testing Summon function: Completed datasets and function for Normal summon and Rare summon function is now available for the users.
 7. Testing collection: The collection pages records all cards that have been obtained.
-7. Testing different settings: The setting page allows users to set their Gender, Birthday, and Nickname.
-8. Accessing extra information: The setting page allows users to access to our facebook and about us page.
-9: Testing logout system: The setting page offers user opportunity to logout with their information being stored in order to login for the next time.
+7. Testing different settings: The setting page allows users to set their Gender and Nickname.
+8. Testing update function: User can update their user their Gender and Nickname information.
+9. Accessing extra information: The setting page allows users to access to our facebook and about us page.
+10: Testing logout system: The setting page offers user opportunity to logout with their information being stored in order to login for the next time.
 
 ## Built With
 
@@ -45,27 +47,28 @@ Steps to test the views:
 
 ## Version Notes:
 
-Version 1.1
+Version 1.2
 
-Added normal summon function which could randomly generate a card associated with this normal card set and cost user 3 points of engergy.
-Added rare summon function which could randomly generate a card associated with this rare card set and cost user 5 points of engergy.
-Added interactions between two summon functions and collection data storage 
-Added interactions between two summon functions and user energy points
-Added tables in firebase for all worlds in explore page
-Completed all the function of different worlds in explore page
-Added tables in firebase for all cards belonged to different worlds
+Added normal summon function which could randomly generate a card associated with this normal card set and cost user 3 points of energy.
+Added rare summon function which could randomly generate a card associated with this rare card set and cost user 5 points of energy.
+Added interactions between two summon functions and collection data storage. 
+Added interactions between two summon functions and user energy points.
+Added tables in firebase for all worlds in explore page.
+Completed all the function of different worlds in explore page.
+Added tables in firebase for all cards belonged to different worlds.
 Completed the function of grading which could render WinACard page if all answers were right, and render youLoose page if one answer was not right.
 Completed the function of WinACard page which could randomly generate a card associated with that world, and automatically created a new record in user's collections.   
-Added Like us on facebook link out page
-Added About us page
+Added Like us on facebook link out page.
+Added About us page.
+Added update function for user to update their nickname and gender in the settings.
+Changed Exchange function into the collection function in order to let the user to complete different functions associate with the card they got more directly.
+Verified the functional music plugin in IOS system.
 
 ## Incomplete Issues:
-
  
- 1. Lack of updating functions associated with Nickname, Birthday, and Gender information under the setting page for different users.
- 2. Lack of functional music plugin.
- 3. Incomplete functional buttons for two remaining gacha functions which are shop and exchange.
- 4. Incomplete some constraint for dynamic user data
+ 1. Incomplete functional buttons for remaining gacha function "shop".
+ 2. Incomplete some constraint for dynamic user data.
+ 3. Incomplete Exchange function for card collected in the collection page.
 
 
 ## Authors

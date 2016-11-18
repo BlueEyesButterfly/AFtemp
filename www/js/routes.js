@@ -81,6 +81,13 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
     controller: 'loginCtrl'
   })
 
+  .state('aboutUs', {
+    url: '/aboutUs',
+    cache:false,
+    templateUrl: 'templates/aboutus.html',
+    controller: 'aboutUsCtrl'
+  })
+
   .state('signup', {
     url: '/page6',
     templateUrl: 'templates/signup.html',

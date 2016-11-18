@@ -247,6 +247,14 @@ function ($scope, $stateParams, $firebaseAuth, $timeout, $state) {
 
 }])
    
+.controller('aboutUsCtrl', ['$scope', '$stateParams', '$firebaseAuth','$timeout','$state',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// You can include any angular dependencies as parameters for this function
+// TIP: Access Route Parameters for your page via $stateParams.parameterName
+function ($scope, $stateParams, $firebaseAuth, $timeout, $state) {
+
+}])
+
+
 .controller('signupCtrl', ['$scope', '$stateParams','$ionicModal', '$firebaseAuth', '$state', '$timeout', 'UserInfor',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
@@ -311,7 +319,50 @@ function ($scope, $stateParams,$state, Auth) {
     }
     else{
     	$scope.hidden=true;
+    };
+    $scope.k={nickname:["qaz"]};
+    $scope.user = {
+    	url:[
+	    	"img/male.jpg",
+	    	"img/female.jpg"
+    	]
+    };
+    
+    $scope.test = function(){
+    	console.log($scope.user.url);
+    	if($scope.user.url=="female"){
+    		$scope.icon="img/female.jpg";
+    	}
+    	else{
+    		$scope.icon="img/male.jpg";
+    	}
+    	console.log($scope.icon);
+    	console.log($scope.k.nickname);
+    	$scope.kn=$scope.k.nickname;
+    	console.log($scope.k.nickname);
     }
+
+    
+
+    $scope.updateUser=function(){
+    	var userId = firebase.auth().currentUser.uid;
+        var userlife= firebase.database().ref('/users/'+ userId+'/username');
+        userlife.once('value', function(snapshot,userlife){
+            var updates_1={};  
+            updates_1['/users/'+ userId+'/username'] = $scope.k.nickname;
+			firebase.database().ref().update(updates_1);                   
+        });
+        var userIcon= firebase.database().ref('/users/'+ userId+'/profile_picture');
+        userIcon.once('value', function(snapshot,userlife){
+            var updates_2={};  
+            updates_2['/users/'+ userId+'/profile_picture'] = $scope.icon;
+			firebase.database().ref().update(updates_2);                   
+        });
+    };
+
+    $scope.aboutUs=function(){
+    	$state.go('aboutUs');
+    };
 	$scope.logout=function(){
 	  Auth.$signOut();
       console.log("Signing out");

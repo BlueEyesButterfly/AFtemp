@@ -10,6 +10,7 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
     .state('tabsController.homePage', {
     url: '/homePage',
+    cache:false,
     views: {
       'tab1': {
         templateUrl: 'templates/homePage.html',
@@ -27,6 +28,7 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
   .state('tabsController.explore', {
     url: '/explorePage',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/explore.html',
@@ -46,6 +48,7 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
   .state('tabsController.gachaPage', {
     url: '/gachaPage',
+    cache:false,
     views: {
       'tab3': {
         templateUrl: 'templates/gachaPage.html',
@@ -85,7 +88,12 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
     url: '/aboutUs',
     cache:false,
     templateUrl: 'templates/aboutus.html',
-    controller: 'aboutUsCtrl'
+    controller: 'aboutUsCtrl',
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    }
   })
 
   .state('signup', {
@@ -96,6 +104,7 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
   .state('tabsController.collection', {
     url: '/collectionPage',
+    cache:false,
     views: {
       'tab5': {
         templateUrl: 'templates/collection.html',
@@ -111,6 +120,7 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
   .state('tabsController.setting', {
     url: '/settingPage',
+    cache:false,
     views: {
       'tab6': {
         templateUrl: 'templates/setting.html',
@@ -126,64 +136,160 @@ angular.module('app.routes', ['firebase','ionic','app.services','app.controllers
 
   .state('tabsController.question1', {
     url: '/fire/question1',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/question1.html',
-        controller: 'question1Ctrl'
+        controller: 'question1Ctrl',
+        resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
       }
     }
   })
 
+  // .state('question1', {
+  //   url: '/question1',
+  //   cache:false,
+  //   templateUrl: 'templates/question1.html',
+  //   controller: 'question1Ctrl'
+  // })
+
   .state('tabsController.question2', {
     url: '/fire/question2',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/question2.html',
-        controller: 'question2Ctrl'
+        controller: 'question2Ctrl',
+        resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
       }
     }
   })
 
   .state('tabsController.question3', {
     url: '/fire/question3',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/question3.html',
-        controller: 'question3Ctrl'
+        controller: 'question3Ctrl',
+        resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
       }
     }
   })
 
     .state('tabsController.question4', {
     url: '/fire/question4',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/question4.html',
-        controller: 'question4Ctrl'
+        controller: 'question4Ctrl',
+        resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
       }
     }
   })
 
     .state('tabsController.question5', {
     url: '/fire/question5',
+    cache:false,
     views: {
       'tab2': {
         templateUrl: 'templates/question5.html',
-        controller: 'question5Ctrl'
+        controller: 'question5Ctrl',
+        resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
       }
     }
   })
 
   .state('youWinACard', {
     url: '/fire/cardAwardpage',
+    cache:false,
     templateUrl: 'templates/youWinACard.html',
-    controller: 'youWinACardCtrl'
+    controller: 'youWinACardCtrl',
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    }
+  })
+  .state('tabsController.showCard', {
+    url: '/fire/showCard',
+    cache:false,
+    views: {
+      'tab5': {
+       templateUrl: 'templates/showCard.html',
+       controller: 'showCardCtrl',
+       resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
+      }
+    }
+  })
+
+  .state('tabsController.showCardInShop', {
+    url: '/fire/showCardInShop',
+    cache:false,
+    views: {
+      'tab3': {
+       templateUrl: 'templates/showCardInShop.html',
+       controller: 'showCardInShopCtrl',
+       resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
+      }
+    }
+  })
+
+  .state('tabsController.shop', {
+    url: '/fire/shop',
+    cache:false,
+    views: {
+      'tab3': {
+       templateUrl: 'templates/shop.html',
+       controller: 'shopCtrl',
+       resolve: {
+          "currentAuth": ["Auth", function(Auth) {
+            return Auth.$requireSignIn();
+          }]
+        }
+      }
+    }
   })
 
   .state('sorryYouLoose', {
     url: '/fireLosePage',
+    cache:false,
     templateUrl: 'templates/sorryYouLoose.html',
-    controller: 'sorryYouLooseCtrl'
+    controller: 'sorryYouLooseCtrl',
+    resolve: {
+      "currentAuth": ["Auth", function(Auth) {
+        return Auth.$requireSignIn();
+      }]
+    }
   })
   .state('intro', {
     url: '/intro',

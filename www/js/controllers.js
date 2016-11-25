@@ -1,25 +1,27 @@
 
 angular.module('app.controllers', ['firebase','ionic','app.services','app.routes','ngCordova',])
   
-.controller('homePageCtrl', ['$scope', '$stateParams','Auth','$state','$cordovaMedia', '$ionicLoading',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('homePageCtrl', ['$scope', '$stateParams','Auth','$state','$cordovaMedia', '$ionicLoading','safeApply',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,Auth,$state,$cordovaMedia,$ionicLoading) {
+function ($scope, $stateParams,Auth,$state,$cordovaMedia,$ionicLoading,safeApply) {
     //$scope.firebaseUser=Auth.currentUser;
     
      var user = firebase.auth().currentUser;
      $scope.firebaseUser=user;
 
      var userId = firebase.auth().currentUser.uid;
-     var userProfile= firebase.database().ref('/users/' + userId);
+     var userProfile= firebase.database().ref('/users/'+ userId);
      // $scope.userProfile=function(){
-	 	userProfile.on('value', function(snapshot) {
-			  $scope.nickname=snapshot.val().username;
-			  $scope.life=snapshot.val().life;
-			  $scope.star=snapshot.val().star;
-			  $scope.energy=snapshot.val().energy;
-			  $scope.url=snapshot.val().profile_picture;
-	    });
+ 	userProfile.on('value', function(snapshot) {
+ 		safeApply($scope, function() {
+		  $scope.nickname=snapshot.val().username;
+		  $scope.life=snapshot.val().life;
+		  $scope.star=snapshot.val().star;
+		  $scope.energy=snapshot.val().energy;
+		  $scope.url=snapshot.val().profile_picture;
+		});
+    });
 
 	  $scope.play = function(src) {
 		var media = $cordovaMedia.newMedia(src);
@@ -53,6 +55,7 @@ function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade,sharedQue
         var templife=snapshot.val();
         if(templife>0){
         	$state.go('tabsController.question1');
+        	//$state.go('question1');
         }
         else{
         	var alertPopup = $ionicPopup.alert({
@@ -67,31 +70,6 @@ function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade,sharedQue
     });
 		
 	};
-	// $scope.w2eq=function(){
- //    grade.current=5;
-	// TypeOfQuestion.currentType=TypeOfQuestion.type[1];
-	// var userId = firebase.auth().currentUser.uid;
- //    var userlife= firebase.database().ref('/users/'+ userId+'/life');
- //    userlife.once('value', function(snapshot,userlife){
- //        var templife=snapshot.val();
- //        if(templife>0){
- //        	$state.go('tabsController.question1');
- //        }
- //        else{
- //        	var alertPopup = $ionicPopup.alert({
-	// 		    title: 'Out of life!',
-	// 		    template: 'You are out of life, please wait.'
-	// 	   });
-
-	// 	   alertPopup.then(function(res) {
-	// 	     console.log('Thank you for not eating my delicious ice cream cone');
-	// 	   });
- // 		};
- //    });
-		
-	// };
-
-
 
 }])
 
@@ -112,10 +90,10 @@ function ($scope, $stateParams,$state,$ionicPopup,TypeOfQuestion,grade,sharedQue
     }
 }])
    
-.controller('gachaPageCtrl', ['$scope', '$stateParams', '$firebaseArray','safeApply','$ionicPopup','$timeout',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('gachaPageCtrl', ['$scope', '$stateParams', '$firebaseArray','safeApply','$ionicPopup','$timeout','$state',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout) {
+function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout,$state) {
      
      $scope.cardImage="img/circle_s.png";
      $scope.summon=function(x){
@@ -197,6 +175,9 @@ function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout) {
 
 
      };
+     $scope.shop=function(){
+     	$state.go('tabsController.shop');
+     }
 
 }])
       
@@ -293,40 +274,161 @@ function ($scope, $stateParams,$ionicModal, $firebaseAuth, $state, $timeout,User
 
 }])
    
-.controller('collectionCtrl', ['$scope', '$stateParams','$firebaseArray', '$firebaseObject','Auth',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('collectionCtrl', ['$scope', '$stateParams','$firebaseArray', '$firebaseObject','Auth','showCardImage','$state','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth) {
+function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth,showCardImage,$state,$ionicPopup) {
 
 	var user = firebase.auth().currentUser;
-     $scope.firebaseUser=user;
-     $scope.url=[];
-     $scope.description=[];
-
+    $scope.firebaseUser=user;
+    $scope.url=[];
+    $scope.description=[];
+    $scope.energyPoint={"Fire":3,"Water":3,"Wind":3,"ligtning":5,"ligting":5,"Life":8,"Power":5,"Earth":3,"Gold":8,"Stone":3}
+    $scope.lifePoint={"Fire":1,"Water":1,"Wind":1,"ligtning":1,"ligting":2,"Life":3,"Power":2,"Earth":2,"Gold":3,"Stone":1}
     var userId=firebase.auth().currentUser.uid;	
     var ref = firebase.database().ref('users/' + userId+'/').child("collections");
     $scope.collections = $firebaseArray(ref);
+
+    $scope.showCard=function(x){
+    	showCardImage.setCardImage(x);
+    	$state.go('tabsController.showCard');
+    };
+    $scope.exchangeForEnergy=function(x){
+        console.log($scope.energyPoint[x.description]);
+        var userId=firebase.auth().currentUser.uid;
+        var userEnergy= firebase.database().ref('/users/'+ userId+'/energy');
+        userEnergy.once('value', function(snapshot,userlife){
+            var tempEngy=snapshot.val();
+            console.log(tempEngy);
+            var updates={};  
+            updates['/users/'+ userId+'/energy'] = tempEngy+$scope.energyPoint[x.description];
+			firebase.database().ref().update(updates);                   
+        });
+    	$scope.collections.$remove(x).then(function(ref) {
+		  ref.key === x.$id; // true
+		});
+
+		var alertPopup = $ionicPopup.alert({
+		    title: 'Exchange succeeded!',
+		    template: 'You gained '+JSON.stringify($scope.energyPoint[x.description])+ " Energy Points!"
+	   });
+    };
+    $scope.exchangeForLife=function(x){
+        console.log($scope.lifePoint[x.description]);
+        var userId=firebase.auth().currentUser.uid;
+        var userlife= firebase.database().ref('/users/'+ userId+'/life');
+                userlife.once('value', function(snapshot,userlife){
+                    var templife=snapshot.val();
+                    console.log(templife);
+	                var updates={};  
+	                updates['/users/'+ userId+'/life'] = templife+$scope.lifePoint[x.description];
+					firebase.database().ref().update(updates);                   
+                });
+    	$scope.collections.$remove(x).then(function(ref) {
+		  ref.key === x.$id; // true
+		});
+		var alertPopup = $ionicPopup.alert({
+		    title: 'Exchange succeeded!',
+		    template: 'You gained '+JSON.stringify($scope.lifePoint[x.description])+ " Life Points!"
+	   });
+    };
 }])
-   
-.controller('settingCtrl', ['$scope', '$stateParams','$state','Auth', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+
+.controller('shopCtrl', ['$scope', '$stateParams','$firebaseArray', 'Auth','showCardImage','$state','$ionicPopup',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,$state, Auth) {
-    var user = firebase.auth().currentUser;
-    $scope.firebaseUser=user;
-    if(user){
-    	$scope.hidden=false;
-    }
-    else{
-    	$scope.hidden=true;
+function ($scope, $stateParams, $firebaseArray,Auth,showCardImage,$state,$ionicPopup) {
+
+	// var user = firebase.auth().currentUser;
+ //    $scope.firebaseUser=user;
+ //    var userId=firebase.auth().currentUser.uid;	
+    // var ref = firebase.database().ref('users/' + userId+'/').child("collections");
+    var ref = firebase.database().ref().child("sCards");
+    $scope.goods = $firebaseArray(ref);
+
+
+    $scope.showCard=function(x){
+    	showCardImage.setCardImage(x);
+    	$state.go('tabsController.showCardInShop');
     };
-    $scope.k={nickname:["qaz"]};
-    $scope.user = {
-    	url:[
-	    	"img/male.jpg",
-	    	"img/female.jpg"
-    	]
+    $scope.buyWithEnergy=function(x){
+        var userId=firebase.auth().currentUser.uid;
+        var userEnergy= firebase.database().ref('/users/'+ userId+'/energy');
+        userEnergy.once('value', function(snapshot,userlife){
+            var tempEngy=snapshot.val();
+            console.log(tempEngy);
+            console.log(x.price);
+            var updates={};  
+            updates['/users/'+ userId+'/energy'] = tempEngy-x.price;
+			firebase.database().ref().update(updates);                   
+        });
+        var ref_collections = firebase.database().ref('users/' + userId+'/').child("collections")
+        var collections=$firebaseArray(ref_collections);
+        collections.$add({
+        "url": x.url,
+        "description": x.description
+      });
+      var alertPopup = $ionicPopup.alert({
+		    title: 'Buy a New Card!',
+		    template: 'It cost you '+JSON.stringify(x.price)+' Energy Points.'+' You can find the new card in your collections.'
+	  });  
     };
+}])
+
+.controller('showCardCtrl', ['$scope', '$stateParams','$firebaseArray', '$firebaseObject','Auth','showCardImage',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// You can include any angular dependencies as parameters for this function
+// TIP: Access Route Parameters for your page via $stateParams.parameterName
+function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth,showCardImage) {
+    $scope.urlOfCard=showCardImage.getCardImage();
+
+}])
+
+.controller('showCardInShopCtrl', ['$scope', '$stateParams','$firebaseArray', '$firebaseObject','Auth','showCardImage',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// You can include any angular dependencies as parameters for this function
+// TIP: Access Route Parameters for your page via $stateParams.parameterName
+function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth,showCardImage) {
+    $scope.urlOfCard=showCardImage.getCardImage();
+
+}])
+   
+.controller('settingCtrl', ['$scope', '$stateParams','$state','Auth','$ionicPopup', '$firebaseArray','safeApply',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// You can include any angular dependencies as parameters for this function
+// TIP: Access Route Parameters for your page via $stateParams.parameterName
+function ($scope, $stateParams,$state, Auth,$ionicPopup,$firebaseArray,safeApply) {
+    
+
+    	// var ref_usename = firebase.database().ref('users/' + userId+'/username')
+	    // ref_usename.on('value', function(snapshot,userlife){
+		   //  safeApply($scope, function() {	    
+		   //  	$scope.user_name=snapshot.val();
+		   //  	console.log($scope.user_name+"**inside");
+		   //  });
+
+	    // });
+
+
+	    var userId = firebase.auth().currentUser.uid;   
+	    var user = firebase.auth().currentUser;
+	    $scope.firebaseUser=user;
+	    if(user){
+	    	$scope.hidden=false;
+	    }
+	    else{
+	    	$scope.hidden=true;
+	    };
+
+	    //console.log($scope.user_name+"out");
+	    //$scope.k={nickname:$scope.user_name};
+	    $scope.k={nickname:"e.g nick"};
+	    $scope.user = {
+	    	url:[
+		    	"img/male.jpg",
+		    	"img/female.jpg"
+	    	]
+	    };
+       
+
+    
     
     $scope.test = function(){
     	console.log($scope.user.url);
@@ -338,8 +440,8 @@ function ($scope, $stateParams,$state, Auth) {
     	}
     	console.log($scope.icon);
     	console.log($scope.k.nickname);
-    	$scope.kn=$scope.k.nickname;
-    	console.log($scope.k.nickname);
+    	// $scope.kn=$scope.k.nickname;
+    	// console.log($scope.k.nickname);
     }
 
     
@@ -358,6 +460,11 @@ function ($scope, $stateParams,$state, Auth) {
             updates_2['/users/'+ userId+'/profile_picture'] = $scope.icon;
 			firebase.database().ref().update(updates_2);                   
         });
+        var alertPopup = $ionicPopup.alert({
+		    title: 'Update!',
+		    template: 'User information is updated successfully.'
+	   });
+
     };
 
     $scope.aboutUs=function(){
@@ -371,7 +478,18 @@ function ($scope, $stateParams,$state, Auth) {
 
 
 }])
-   
+
+.service('showCardImage',function(){
+	var cardImage="";
+    return {
+    getCardImage: function () {
+        return cardImage;
+    },
+    setCardImage: function(value) {
+        cardImage = value;
+    }
+	};
+})   
 .service('grade',function(){
 	var current=5;
     return {
@@ -383,6 +501,7 @@ function ($scope, $stateParams,$state, Auth) {
     }
 };
 })
+
 // .service('TypeOfQuestion',function(){
 // 	this.type=['easyQuestions','w2eq','w3eq'];
 // 	this.currentType=this.type[0];
@@ -420,6 +539,7 @@ function ($scope, $stateParams,$state, Auth) {
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion) {
+    // $state.go($state.current, {}, {reload: true});
 
     var easyQuestions= firebase.database().ref('/'+TypeOfQuestion.currentType+'/');
     // var easyQuestions= firebase.database().ref('/w2eq/');
@@ -449,7 +569,7 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,grade,TypeOfQuestion) {
 	};
 
 	$scope.submit=function(){
-
+   
 		var array = [];
 	    for(i in $scope.checkItems) {
 	        console.log($scope.checkItems[i]);
@@ -980,8 +1100,8 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sharedQuestionType) {
     var questionType=sharedQuestionType.getProperty();
     var groupOfCard=TypeOfQuestion.typeCard[questionType];
-    console.log(questionType);
-    console.log(groupOfCard);
+    console.log("QuestionType:"+questionType);
+    console.log("CardType:"+groupOfCard);
     var cards= firebase.database().ref('/'+groupOfCard+'/');
     // var easyQuestions= firebase.database().ref('/w2eq/');
     $scope.initialId=Math.floor((Math.random()*(Object.keys(cards).length-1))+1.0);

@@ -5,10 +5,13 @@
 		<div class="list">
 
 		    <a class="item item-thumbnail-left" ng-repeat="x in collections">
-		      <img src="{{x.url}}">
+		      <img src="{{x.url}}" ng-click=showCard(x.url)>
 		      <h2>Description</h2>
 		      <p>{{x.description}}</p>
+		      <button class="button icon-right ion-nuclear button-positive" style="font-size: 15px;" ng-click=exchangeForEnergy(x)>Exchange</button>
+		      <button class="button icon-right ion-android-favorite button-balanced" style="font-size: 15px;" ng-click=exchangeForLife(x)>Exchange</button>
 		    </a>
+
 
 		</div>
 	</form>

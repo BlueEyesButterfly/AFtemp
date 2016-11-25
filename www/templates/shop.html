@@ -1,0 +1,17 @@
+<ion-view title="Shop" id="shopPage" ng-controller="shopCtrl">
+    <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center;background-size:cover;" class="has-header">
+    <form id="shop-list" class="list">
+    	
+		<div class="list">
+
+		    <a class="item item-thumbnail-left" ng-repeat="x in goods">
+		      <img src="{{x.url}}" ng-click=showCard(x.url)>
+		      <h2>Description</h2>
+		      <p>{{x.description}}</p>
+		      <p>Price: {{x.price}} Energy Points</p>
+		      <button class="button icon-left ion-card button-royal" style="font-size: 15px" ng-click=buyWithEnergy(x)>Buy</button>
+		    </a>
+		</div>
+	</form>
+    </ion-content>
+</ion-view>

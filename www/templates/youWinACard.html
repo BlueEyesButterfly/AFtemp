@@ -1,17 +1,15 @@
 <ion-view title="You win a card!" id="page11">
-    <ion-content padding="true" style="background: url({{urlOfCard}}) no-repeat center; background-size:cover; " class="has-header">
-       <div style="position: absolute; top: 200px;width: 250px; height: 40px; left: 55px">    
-        
+    <ion-content padding="true" style="background: url(img/fpXvo7ASeWJS54jyaBlE_background.jpg) no-repeat center; background-size:cover; " class="has-header">
         <div class="list card" id="win-card22">
             <div class="item item-body" id="Lose-list-item-container2">
+                <div>
+                    <img src={{urlOfCard}} width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+                </div>
                 <div id="win-markdown1" style="margin-top:0px;color:#000000;" >
                     <p>Congratulation! You win a card. </p>
                 </div>
                 <a id="youWinACard-button14" class="button button-positive  button-block" ng-click="winACard()">OK</a>            
             </div>
         </div>
-
-       </div>
-
     </ion-content>
 </ion-view>

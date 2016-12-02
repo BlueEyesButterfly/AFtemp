@@ -112,45 +112,45 @@ function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout,$st
 		  // To fix this, we can use $scope.$apply() to notify Angular that a change occurred.
 		  safeApply($scope, function() {
 		  	//obtain the url of this chosen card
-		    $scope.cardImage = snapshot.val().url;
+		    $scope.cardImageTemp = snapshot.val().url;
 		    console.log(snapshot.val().url);
 		    var userId=firebase.auth().currentUser.uid;	
 		    //add this card to user's collections
-			$scope.description=["Fire","Water","Wind","ligtning","ligting","Life","Power","Earth","Gold","Stone"]
+			$scope.description=["Fire","Water","Wind","Lightning","Light","Life","Power","Earth","Gold","Stone"]
 		    var ref = firebase.database().ref('users/' + userId+'/').child("collections");
 		    $scope.collections = $firebaseArray(ref);
 		    var num_temp=Math.floor((Math.random()*9)+1.0)
-	      	$scope.collections.$add({
-	        "url": $scope.cardImage,
-	        "description": $scope.description[num_temp]
-	        // timestamp: firebase.database.ServerValue.TIMESTAMP
-	      	});
-	      	if(x=='nsCards/'){
-		        var alertPopup = $ionicPopup.alert({
-				    title: 'Congratulation!',
-				    template: 'You get a new card! Your Energy minus 3 points.'
-			   });
-		         alertPopup.then(function() {
-		         	//reassigned the cardImage to default
-	                 $timeout(function(){
-				        $scope.cardImage="img/circle_s.png";
-				    }, 2000);
+	      	// $scope.collections.$add({
+	       //  "url": $scope.cardImage,
+	       //  "description": $scope.description[num_temp]
+	       //  // timestamp: firebase.database.ServerValue.TIMESTAMP
+	      	// });
+	     //  	if(x=='nsCards/'){
+		    //     var alertPopup = $ionicPopup.alert({
+				  //   title: 'Congratulation!',
+				  //   template: 'You get a new card! Your Energy minus 3 points.'
+			   // });
+		    //      alertPopup.then(function() {
+		    //      	//reassigned the cardImage to default
+	     //             $timeout(function(){
+				  //       $scope.cardImage="img/circle_s.png";
+				  //   }, 2000);
 			        
-			   });
-	       }
-	       else{
-	       	    var alertPopup = $ionicPopup.alert({
-				    title: 'Congratulation!',
-				    template: 'You get a new card! Your Energy minus 5 points.'
-			   });
-		         alertPopup.then(function() {
-		         	//reassigned the cardImage to default
-	                 $timeout(function(){
-				        $scope.cardImage="img/circle_s.png";
-				    }, 2000);
+			   // });
+	     //   }
+	     //   else{
+	     //   	    var alertPopup = $ionicPopup.alert({
+				  //   title: 'Congratulation!',
+				  //   template: 'You get a new card! Your Energy minus 5 points.'
+			   // });
+		    //      alertPopup.then(function() {
+		    //      	//reassigned the cardImage to default
+	     //             $timeout(function(){
+				  //       $scope.cardImage="img/circle_s.png";
+				  //   }, 2000);
 			        
-			   });
-	       }
+			   // });
+	     //   }
 	         // substract the energy point of user
 	         var userEngy= firebase.database().ref('/users/'+ userId+'/energy');
                 userEngy.once('value', function(snapshot){
@@ -158,10 +158,62 @@ function ($scope, $stateParams,$firebaseArray,safeApply,$ionicPopup,$timeout,$st
                     console.log(tempEngy);
 	                var updates={};
 	                if(x=='nsCards/'){
-	                	updates['/users/'+ userId+'/energy'] = tempEngy-3;
+	                	if(tempEngy>=3){
+	                		updates['/users/'+ userId+'/energy'] = tempEngy-3;
+	                		$scope.cardImage = $scope.cardImageTemp;
+	                	    $scope.collections.$add({
+					        "url": $scope.cardImage,
+					        "description": $scope.description[num_temp]
+					        // timestamp: firebase.database.ServerValue.TIMESTAMP
+					      	});
+			                var alertPopup = $ionicPopup.alert({
+						    title: 'Congratulation!',
+						    template: 'You get a new card! Your Energy minus 3 points.'
+				   			});
+				         	alertPopup.then(function() {
+				         	//reassigned the cardImage to default
+				                $timeout(function(){
+							        $scope.cardImage="img/circle_s.png";
+							    }, 2000);
+					        
+						   });
+	                	}
+	                	else{
+	                		var alertPopup = $ionicPopup.alert({
+							    title: 'Sorry!',
+							    template: 'You do not have enough Energy points.'
+						   });
+	                	}
+	                	
 	                } 
 	                else{
-	                	updates['/users/'+ userId+'/energy'] = tempEngy-5;
+	                	if(tempEngy>=5){
+	                		updates['/users/'+ userId+'/energy'] = tempEngy-5;
+	                		$scope.cardImage = $scope.cardImageTemp;
+	                	    $scope.collections.$add({
+					        "url": $scope.cardImage,
+					        "description": $scope.description[num_temp]
+					        // timestamp: firebase.database.ServerValue.TIMESTAMP
+					      	});
+	        	       	    var alertPopup = $ionicPopup.alert({
+							    title: 'Congratulation!',
+							    template: 'You get a new card! Your Energy minus 5 points.'
+						     });
+					         alertPopup.then(function() {
+					         	//reassigned the cardImage to default
+				                 $timeout(function(){
+							        $scope.cardImage="img/circle_s.png";
+							    }, 2000);
+						        
+						   });
+	                	}
+	                	else{
+	                		var alertPopup = $ionicPopup.alert({
+							    title: 'Sorry!',
+							    template: 'You do not have enough Energy points.'
+						   });
+	                	}
+	                	
 	                }
 	                
 					firebase.database().ref().update(updates);                   
@@ -283,8 +335,8 @@ function ($scope, $stateParams, $firebaseArray,$firebaseObject,Auth,showCardImag
     $scope.firebaseUser=user;
     $scope.url=[];
     $scope.description=[];
-    $scope.energyPoint={"Fire":3,"Water":3,"Wind":3,"ligtning":5,"ligting":5,"Life":8,"Power":5,"Earth":3,"Gold":8,"Stone":3}
-    $scope.lifePoint={"Fire":1,"Water":1,"Wind":1,"ligtning":1,"ligting":2,"Life":3,"Power":2,"Earth":2,"Gold":3,"Stone":1}
+    $scope.energyPoint={"Fire":3,"Water":3,"Wind":3,"Lightning":5,"Light":5,"Life":8,"Power":5,"Earth":3,"Gold":8,"Stone":3}
+    $scope.lifePoint={"Fire":1,"Water":1,"Wind":1,"Lightning":1,"Light":2,"Life":3,"Power":2,"Earth":2,"Gold":3,"Stone":1}
     var userId=firebase.auth().currentUser.uid;	
     var ref = firebase.database().ref('users/' + userId+'/').child("collections");
     $scope.collections = $firebaseArray(ref);
@@ -1114,7 +1166,7 @@ function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sha
 	  console.log($scope.urlOfCard);
 	});
     var userId=firebase.auth().currentUser.uid;
-    $scope.description=["Fire","Water","Wind","ligtning","ligting","Life","Power","Earth","Gold","Stone"]
+    $scope.description=["Fire","Water","Wind","Lightning","Light","Life","Power","Earth","Gold","Stone"]
 	// $scope.urlOfCard='img/w10c1.jpg';
 	
 

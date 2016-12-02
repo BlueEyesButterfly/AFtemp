@@ -1155,10 +1155,10 @@ function ($scope, $stateParams, $state,Auth,$ionicPopup,TypeOfQuestion,grade) {
 // 	this.typeCard={'easyQuestions':'academyCards';'w2eq':'summerCards','w3eq':'shrineCards'}
 // })
 
-.controller('youWinACardCtrl', ['$scope', '$stateParams', '$state', 'TypeOfQuestion', 'Auth', '$firebaseArray','sharedQuestionType', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('youWinACardCtrl', ['$scope', '$stateParams', '$state', 'TypeOfQuestion', 'Auth', '$firebaseArray','sharedQuestionType', 'safeApply',// The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sharedQuestionType) {
+function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sharedQuestionType,safeApply) {
     var questionType=sharedQuestionType.getProperty();
     var groupOfCard=TypeOfQuestion.typeCard[questionType];
     console.log("QuestionType:"+questionType);
@@ -1171,9 +1171,12 @@ function ($scope, $stateParams, $state, TypeOfQuestion, Auth, $firebaseArray,sha
     // console.log($scope.initialId);
 	var question= firebase.database().ref('/'+groupOfCard+'/'+$scope.initialId.toString());
 	question.on('value', function(snapshot) {
-	  $scope.urlOfCard=snapshot.val().url;
-	  console.log($scope.urlOfCard);
+		safeApply($scope, function() {
+		    $scope.urlOfCard=snapshot.val().url;
+	  		console.log($scope.urlOfCard);
+		});
 	});
+	console.log($scope.urlOfCard);
     var userId=firebase.auth().currentUser.uid;
     $scope.description=["Fire","Water","Wind","Lightning","Light","Life","Power","Earth","Gold","Stone"]
 	// $scope.urlOfCard='img/w10c1.jpg';

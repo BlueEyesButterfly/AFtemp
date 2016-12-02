@@ -408,22 +408,31 @@ function ($scope, $stateParams, $firebaseArray,Auth,showCardImage,$state,$ionicP
         var userEnergy= firebase.database().ref('/users/'+ userId+'/energy');
         userEnergy.once('value', function(snapshot,userlife){
             var tempEngy=snapshot.val();
+            if(tempEngy>x.price){
             console.log(tempEngy);
             console.log(x.price);
             var updates={};  
             updates['/users/'+ userId+'/energy'] = tempEngy-x.price;
-			firebase.database().ref().update(updates);                   
+			firebase.database().ref().update(updates); 
+			var ref_collections = firebase.database().ref('users/' + userId+'/').child("collections");
+		    var collections=$firebaseArray(ref_collections);
+		    collections.$add({
+		        "url": x.url,
+		        "description": x.description
+		    });
+		    var alertPopup = $ionicPopup.alert({
+				    title: 'Buy a New Card!',
+				    template: 'It cost you '+JSON.stringify(x.price)+' Energy Points.'+' You can find the new card in your collections.'
+			});   
+		   }
+		   else{
+		   	    var alertPopup = $ionicPopup.alert({
+				    title: 'Sorry!',
+				    template: 'You do not have enough energy points.'
+				});  
+		   }                 
         });
-        var ref_collections = firebase.database().ref('users/' + userId+'/').child("collections")
-        var collections=$firebaseArray(ref_collections);
-        collections.$add({
-        "url": x.url,
-        "description": x.description
-      });
-      var alertPopup = $ionicPopup.alert({
-		    title: 'Buy a New Card!',
-		    template: 'It cost you '+JSON.stringify(x.price)+' Energy Points.'+' You can find the new card in your collections.'
-	  });  
+
     };
 }])
 
